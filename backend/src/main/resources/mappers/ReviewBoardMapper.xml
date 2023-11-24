@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.home.repository.ReviewBoardMapper">
+    <resultMap id="reviewBoardDto" type="reviewBoardDto">
+        <result column="board_id" property="boardId"/>
+        <result column="title" property="title"/>
+        <result column="member_id" property="memberId"/>
+        <result column="content" property="content"/>
+        <result column="regist_date" property="registDate"/>
+        <result column="score" property="score"/>
+        <result column="aptCode" property="aptCode"/>
+    </resultMap>
+
+    <insert id="saveReviewBoard" parameterType="reviewBoardDto">
+        INSERT INTO review_board(member_id, title, content, score, aptCode)
+        VALUES (#{memberId}, #{title}, #{content}, #{score}, #{aptCode})
+    </insert>
+
+    <update id="updateReviewBoard" parameterType="reviewBoardDto">
+        UPDATE review_board
+        SET title=#{title},
+            content=#{content},
+            score=#{score},
+            regist_date=CURRENT_TIMESTAMP
+        WHERE board_id = #{boardId}
+    </update>
+
+    <delete id="deleteReviewBoard" parameterType="int">
+        DELETE
+        FROM review_board
+        WHERE board_id = #{boardId}
+    </delete>
+
+    <select id="getPageList" parameterType="java.util.HashMap" resultMap="reviewBoardDto">
+        SELECT *
+        FROM review_board
+        WHERE aptCode = #{aptCode}
+        ORDER BY regist_date DESC LIMIT #{offset}, #{limit};
+    </select>
+
+    <select id="recordCount" parameterType="long" resultType="integer">
+        SELECT count(board_id)
+        FROM review_board
+        WHERE aptCode = #{aptCode}
+    </select>
+
+    <select id="getReview" parameterType="int" resultMap="reviewBoardDto">
+        SELECT *
+        FROM review_board
+        WHERE board_id = #{boardId}
+    </select>
+</mapper>

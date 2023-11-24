@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.home.repository.MemberMapper">
+    <resultMap id="memberDto" type="memberDto">
+        <result column="member_id" property="memberId"/>
+        <result column="pw" property="pw"/>
+        <result column="nickname" property="nickname"/>
+        <result column="address" property="address"/>
+        <result column="type" property="type"/>
+        <result column="refresh_token" property="refreshToken"/>
+    </resultMap>
+
+    <insert id="saveMember" parameterType="memberDto">
+        INSERT INTO members(member_id, pw, nickname, address)
+        VALUES (#{memberId}, #{pw}, #{nickname}, #{address})
+    </insert>
+
+    <select id="loginMember" parameterType="loginRequest" resultMap="memberDto">
+        SELECT member_id, refresh_token
+        FROM members
+        WHERE member_id = #{memberId}
+          AND pw = #{pw}
+    </select>
+
+    <update id="setRefreshToken" parameterType="map">
+        UPDATE members
+        SET refresh_token=#{token}
+        WHERE member_id = #{memberId}
+    </update>
+
+    <select id="getMember" parameterType="string" resultMap="memberDto">
+        SELECT *
+        FROM members
+        WHERE member_id = #{memberId}
+    </select>
+
+    <select id="getRefreshToken" parameterType="string" resultType="string">
+        SELECT refresh_token
+        FROM members
+        WHERE member_id = #{memberId}
+    </select>
+    
+    <update id="updateMember" parameterType="memberDto">
+        UPDATE members
+        SET nickname=#{nickname},
+            address=#{address}
+        WHERE member_id = #{memberId}
+    </update>
+
+    <delete id="deleteMember" parameterType="string">
+        DELETE
+        FROM members
+        WHERE member_id = #{memberId}
+    </delete>
+
+    <select id="existMember" parameterType="string" resultType="boolean">
+        SELECT IF(COUNT(*) = 1, 0, 1)
+        FROM members
+        WHERE member_id = #{memberId}
+    </select>
+
+    <select id="typeCheck" parameterType="string" resultType="boolean">
+        SELECT type
+        FROM members
+        WHERE member_id = #{memberId}
+    </select>
+</mapper>

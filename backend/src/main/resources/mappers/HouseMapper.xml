@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.home.repository.HouseMapper">
+    <resultMap id="ratingDto" type="ratingDto">
+        <result column="aptCode" property="aptCode"/>
+        <result column="review_count" property="reviewCount"/>
+        <result column="total_rating" property="totalRating"/>
+    </resultMap>
+
+    <select id="getHouseDealInfo" parameterType="long" resultType="houseDealDto">
+        SELECT *
+        FROM housedeal
+        WHERE aptCode = #{aptCode}
+        ORDER BY dealYear DESC, dealMonth DESC, dealDay DESC
+    </select>
+
+    <select id="getHouseInfo" parameterType="long" resultType="houseInfoDto">
+        SELECT *
+        FROM houseinfo
+        WHERE aptCode = #{aptCode}
+    </select>
+
+    <select id="getDongCodeInfo" parameterType="string" resultType="dongCodeDto">
+        SELECT *
+        FROM dongcode
+        WHERE dongCode = #{dongCode}
+    </select>
+
+    <select id="getRating" parameterType="long" resultMap="ratingDto">
+        SELECT *
+        FROM rating
+        WHERE aptCode = #{aptCode}
+    </select>
+</mapper>

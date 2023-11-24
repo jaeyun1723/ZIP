@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.home.repository.MapMapper">
+    <select id="searchListByRegion" parameterType="string" resultType="dongCodeDto">
+        SELECT *
+        FROM dongcode
+        WHERE sidoName LIKE "%"#{keyword}"%"
+           OR gugunName LIKE "%"#{keyword}"%"
+           OR dongName LIKE "%"#{keyword}"%"
+        HAVING gugunName IS NOT NULL
+        ORDER BY dongName LIMIT 5
+    </select>
+
+    <select id="searchListByApt" parameterType="string" resultType="houseInfoDto">
+        SELECT *
+        FROM houseinfo
+        WHERE apartmentName LIKE "%"#{keyword}"%" LIMIT 10
+    </select>
+
+    <select id="getRecentHouseDealByDongCode" parameterType="string" resultType="recentDealResponse">
+        SELECT *
+        FROM (SELECT *,
+                     ROW_NUMBER() OVER (PARTITION BY aptCode ORDER BY dealYear DESC, dealMonth DESC, dealDay DESC) AS recentDeal
+              FROM housedeal
+                       NATURAL JOIN (SELECT * FROM houseinfo WHERE dongCode LIKE #{code}"%") AS houseinfo) AS deals
+        WHERE recentDeal = 1 ORDER BY dealYear desc, dealMonth desc, dealDay desc LIMIT 20
+    </select>
+
+    <select id="getRecentHouseDealByLocation" parameterType="locationRequest" resultType="recentDealResponse">
+        SELECT *
+        FROM (SELECT *,
+                     ROW_NUMBER() OVER (PARTITION BY aptCode ORDER BY dealYear DESC, dealMonth DESC, dealDay DESC) AS recentDeal
+              FROM housedeal
+                       NATURAL JOIN (SELECT *
+                                     FROM houseinfo
+                                     WHERE lng BETWEEN #{start.lng} AND #{end.lng}
+                                       AND lat BETWEEN #{start.lat} AND #{end.lat}) AS houseinfo) AS deals
+        WHERE recentDeal = 1 ORDER BY dealYear desc, dealMonth desc, dealDay desc
+    </select>
+
+</mapper>

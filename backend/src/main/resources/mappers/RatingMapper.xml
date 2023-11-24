@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.home.repository.RatingMapper">
+    <resultMap id="ratingDto" type="ratingDto">
+        <result column="aptCode" property="aptCode"/>
+        <result column="review_count" property="reviewCount"/>
+        <result column="total_rating" property="totalRating"/>
+    </resultMap>
+
+    <select id="isEmpty" parameterType="long" resultType="boolean">
+        SELECT IF(COUNT(*) = 0, 1, 0)
+        FROM rating
+        WHERE aptCode = #{aptCode}
+    </select>
+
+    <insert id="saveRating" parameterType="ratingDto">
+        INSERT INTO rating
+        VALUES (#{aptCode}, #{reviewCount}, #{totalRating})
+    </insert>
+
+    <update id="addRating" parameterType="ratingDto">
+        UPDATE rating
+        SET review_count=review_count + 1,
+            total_rating=total_rating + #{totalRating}
+        WHERE aptCode = #{aptCode}
+    </update>
+
+    <update id="updateRating" parameterType="ratingDto">
+        UPDATE rating
+        SET total_rating=total_rating + #{totalRating}
+        WHERE aptCode = #{aptCode}
+    </update>
+
+    <update id="deleteRating" parameterType="ratingDto">
+        UPDATE rating
+        SET review_count=review_count - 1,
+            total_rating=total_rating - #{totalRating}
+        WHERE aptCode = #{aptCode}
+    </update>
+</mapper>
