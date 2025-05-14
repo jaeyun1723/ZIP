@@ -19,14 +19,9 @@
         FROM houseinfo
         WHERE apartmentName LIKE "%"#{keyword}"%" LIMIT 10
     </select>
-
-    <select id="getRecentHouseDealByDongCode" parameterType="string" resultType="recentDealResponse">
-        SELECT *
-        FROM (SELECT *,
-                     ROW_NUMBER() OVER (PARTITION BY aptCode ORDER BY dealYear DESC, dealMonth DESC, dealDay DESC) AS recentDeal
-              FROM housedeal
-                       NATURAL JOIN (SELECT * FROM houseinfo WHERE dongCode LIKE #{code}"%") AS houseinfo) AS deals
-        WHERE recentDeal = 1 ORDER BY dealYear desc, dealMonth desc, dealDay desc LIMIT 20
+        
+    <select id="getRecentHouseDealByDongCode" parameterType="string" resultType="recentDealResponse" statementType="CALLABLE">
+         {call get_latest_apt_deals_limit_20(#{code})}
     </select>
 
     <select id="getRecentHouseDealByLocation" parameterType="locationRequest" resultType="recentDealResponse">
